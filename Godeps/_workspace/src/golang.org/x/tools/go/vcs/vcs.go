@@ -650,6 +650,7 @@ func init() {
 	// fill in cached regexps.
 	// Doing this eagerly discovers invalid regexp syntax
 	// without having to run a command that needs that regexp.
+	vcsPaths = append(getCustomVCSPaths(), vcsPaths...)
 	for _, srv := range vcsPaths {
 		srv.regexp = regexp.MustCompile(srv.re)
 	}
