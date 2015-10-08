@@ -9,7 +9,6 @@ import (
 )
 
 var customVCSPaths []*vcsPath
-var mirrorProjects map[string]string
 var verboseMirror bool
 
 type customVCSPath struct {
@@ -23,7 +22,6 @@ func init() {
 	if os.Getenv("GO_GET_VERBOSE_MIRROR") != "" {
 		verboseMirror = true
 	}
-	mirrorProjects = make(map[string]string)
 	configFile := os.Getenv("GO_GET_MIRROR_CONFIG_FILE")
 	if configFile == "" {
 		currentDir, _ := os.Getwd()
@@ -36,7 +34,6 @@ func init() {
 		if configContent, errRead := ioutil.ReadFile(configFile); errRead == nil {
 			var objmap map[string]*json.RawMessage
 			if errUnmarshal := json.Unmarshal(configContent, &objmap); errUnmarshal == nil {
-				var tmpMirrors []map[string]string
 				var tmpVCSPaths []*customVCSPath
 				if errMetas := json.Unmarshal(*objmap["Metas"], &tmpVCSPaths); errMetas == nil {
 					for _, tmpVCSPath := range tmpVCSPaths {
@@ -44,13 +41,6 @@ func init() {
 					}
 				} else {
 					mirrorErrorf("failed unmarshal vcs metas from %v : %s", configFile, errMetas)
-				}
-				if errMirrors := json.Unmarshal(*objmap["Mirrors"], &tmpMirrors); errMirrors == nil {
-					for _, mirror := range tmpMirrors {
-						mirrorProjects[mirror["source"]] = mirror["target"]
-					}
-				} else {
-					mirrorErrorf("failed unmarshal mirror projects from %v : %s", configFile, errMirrors)
 				}
 			} else {
 				mirrorErrorf("failed unmarshal go-get-config from %v : %s", configFile, errUnmarshal)
@@ -65,10 +55,6 @@ func init() {
 
 func getCustomVCSPaths() []*vcsPath {
 	return customVCSPaths
-}
-
-func getMirrorProjects() map[string]string {
-	return mirrorProjects
 }
 
 func mirrorErrorf(format string, args ...interface{}) {

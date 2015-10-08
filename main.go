@@ -79,7 +79,7 @@ func main() {
 	}
 
 	if args[0] == "version" {
-		fmt.Printf("godep v%d (%s/%s/%s)\n", version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+		fmt.Printf("godep v%d (%s/%s/%s) Customed by Douban (Meta)\n", version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 		return
 	}
 
